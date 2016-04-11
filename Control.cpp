@@ -2,6 +2,7 @@
 #include "commands.h"
 
 bool user = false;
+int size_ucomms;
 
 void initialize()
 {
@@ -19,6 +20,7 @@ void initialize()
 	{
 		UCommands.push_back(name);
 		UCommands.push_back(call);
+		size_ucomms++;
 	}
 }
 
@@ -27,14 +29,19 @@ char opening()
 	string username = "Anonymous";
 
 	cout << " Hello and Welcome. This is high tech softwre that is ditibuted\n for free and used by anyone. It is not for beginner use and should only\n be used by people who know its intended purpose.\n\tThe software is about to start.\n\tEnter user name to login:\n\t";
-	cin >> username;
+	getline(cin, username);
 	if (username == usernames[0]) {
-		cout << " Welcome Back " << username << "!\n" << " To view a list of options type \"Opt\"\n\n";
-		cout << " Your operating system is required for this to work\n\n";
-		char machine;
-		cout << " Type \"w\" for Windows and \"l\" for Linux:\n\t";
-		cin >> machine;
-		return machine;
+		string password;
+		cout << "Password: ";
+		getline(cin, password);
+		if (password == "<password>") { //Put your password here
+			cout << " Welcome Back " << username << "!\n" << " To view a list of options type \"Opt\"\n\n";
+			cout << " Your operating system is required for this to work\n\n";
+			char machine;
+			cout << " Type \"w\" for Windows and \"l\" for Linux:\n\t";
+			cin >> machine;
+			return machine;
+		}
 	}
 	else {
 		cerr << "Please leave now and you won't get hacked\n";
@@ -174,72 +181,81 @@ void view()
 }
 
 void ucommand(int com) {
+	//cout << "test";
 	vector<int> oddnum;
 	ifstream infile;
+	infile.open("data.txt");
 	string lineno, line;
 	int x, y, y1;
 	x = com;
 	y = 0.5 * x - 0.5;
 	y1 = y + 1;
-	for (int lineno = 0; getline(infile, line) && lineno < y1; lineno++)
+	for (int lineno = 0; getline(infile, line) && lineno < y1; lineno++) {
 		if (lineno == y)
-			cout << line << endl;
+			system(line.c_str());
+		else
+			cout << "Error: Invalid filesystem" << endl;
+	}
 }
 
 void use(char innermachine) {
 	auto decider = [innermachine]() {
 		while (true) {
-			string typed;
+			string typed, extra;
 			cout << " >  ";
-			while (getline(cin, typed)) {
-				size_t found = typed.find("ucommand");
-				if (typed == "opt") {
-					cout << "  Here is a list of commands:" << commands[0] << commands[1] << commands[2] << commands[3] << commands[4] << commands[5] << commands[6] << "\n";
+			string typedmod;
+			getline(cin, typedmod);
+				if (typedmod == "opt") {
+					cout << "  Here is a list of commands:";
+					for (int i = 0; i < commandNum; i++) {
+						cout << commands[i];
+					}
+					cout << "\n";
 				}
-				else if (typed == internalcommands[0]) {
+				else if (typedmod == internalcommands[0]) {
 					ipfind(innermachine);
 				}
-				else if (typed == internalcommands[1]) {
+				else if (typedmod == internalcommands[1]) {
 					encrypt(innermachine);
 				}
-				else if (typed == internalcommands[2]) {
+				else if (typedmod == internalcommands[2]) {
 					track(innermachine);
 				}
-				else if (typed == internalcommands[3]) {
+				else if (typedmod == internalcommands[3]) {
 					admin(innermachine);
 				}
-				else if (typed == internalcommands[4]) {
+				else if (typedmod == internalcommands[4]) {
 					make();
 				}
-				else if (typed == internalcommands[5]) {
+				else if (typedmod == internalcommands[5]) {
 					view();
 				}
-				else if (found != string::npos) {
-						for (int i = 1; i < sizeof(UCommands); i += 2) {
-							// for loop with sizeof()
-							size_t found = typed.find(UCommands[i]);
-							if (found != string::npos) {
-								cout << i;
+				else {
+					int pos = typedmod.find_first_of(' ');
+					string extra = typedmod.substr(pos + 1),
+						typed = typedmod.substr(0, pos);
+					if (typed == "ucommand") {
+						for (int i = 1; i <= size_ucomms; i += 2) {
+							//for loop with sizeof()
+							if (UCommands[i] == extra) {
 								ucommand(i);
 							}
 							else {
-								cout << " It didn't work";
+								cout << " Error: Command not found";
 							}
 						}
-						pos = found + 1;
+					}
+					else {
+						cout << "\tNot recognized as a internal or external command!\n";
+					}
 				}
-				else {
-					cout << "\tNot recognized as a internal or external command!\n";
-				}
-				cout << " >  ";
-			}
 		}
 	};
-	decider();
+decider();
 }
 
 
-int main() // this was made, programmed, and executed by @_S1m_C0d322
+int main() // this was made, programmed, and executed by @_S1m_C0d3
 {
 	initialize();
 	char innermachine = opening();
