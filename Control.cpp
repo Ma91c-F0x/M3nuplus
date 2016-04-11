@@ -34,7 +34,7 @@ char opening()
 		string password;
 		cout << "Password: ";
 		getline(cin, password);
-		if (password == "test") { //Put your password here
+		if (password == "<password>") { //Put your password here
 			cout << " Welcome Back " << username << "!\n" << " To view a list of options type \"Opt\"\n\n";
 			cout << " Your operating system is required for this to work\n\n";
 			char machine;
