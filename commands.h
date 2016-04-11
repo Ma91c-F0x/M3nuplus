@@ -24,7 +24,7 @@ string internalcommands[commandNum]{
 };
 
 string usernames[]{
-	"@_S1m_C0d322"
+	"<username>" //Put your username here
 };
 
 vector<string> UCommands;
